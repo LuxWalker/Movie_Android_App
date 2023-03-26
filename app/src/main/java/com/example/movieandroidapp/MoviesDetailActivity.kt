@@ -38,6 +38,7 @@ class MoviesDetailActivity : AppCompatActivity(),OnClickListener {
     private lateinit var moviesFavoriteHelper: MoviesFavoriteHelper
     private var movies: Movies? = null
     private var position: Int = 0
+    private var isFavoriteState = false
 
     @Inject
     lateinit var apiRepository: MainRepository
@@ -65,7 +66,7 @@ class MoviesDetailActivity : AppCompatActivity(),OnClickListener {
 
         binding.fabFavorite.setOnClickListener(this)
         binding.fabShare.setOnClickListener(this)
-        binding.fabFavorite.setImageResource(R.drawable.ic_favorite_empty)
+        checkUserFavorite()
 
         binding.apply {
 
@@ -277,10 +278,40 @@ class MoviesDetailActivity : AppCompatActivity(),OnClickListener {
 
     }
 
+    private fun deleteUserFavorite() {
+        val moviesName = intent.getStringExtra("EXTRA_NAME")
+
+        moviesFavoriteHelper = MoviesFavoriteHelper.getInstance(this)
+        moviesFavoriteHelper.open()
+        if (moviesName?.let { moviesFavoriteHelper.checkMoviesName(it) } == true) moviesFavoriteHelper.deleteByTitle(moviesName)
+        Toast.makeText(this,
+            "$moviesName ${getString(R.string.remove_favorites)}",
+            Toast.LENGTH_SHORT).show()
+    }
+    private fun checkUserFavorite() {
+        val moviesName = intent.getStringExtra("EXTRA_NAME")
+
+        moviesFavoriteHelper = MoviesFavoriteHelper.getInstance(this)
+        if (moviesName?.let { moviesFavoriteHelper.checkMoviesName(it) } == true) {
+            isFavoriteState = true
+            setFavoriteStatus(isFavoriteState)
+        }
+    }
+
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.fabFavorite -> {
+                if (!isFavoriteState) {
                     addUserFavorite()
+                    isFavoriteState = !isFavoriteState
+                    setFavoriteStatus(isFavoriteState)
+                    checkUserFavorite()
+                } else {
+                    deleteUserFavorite()
+                    setFavoriteStatus(!isFavoriteState)
+                    isFavoriteState = false
+                    checkUserFavorite()
+                }
             }
             R.id.fabShare -> {
                 val moviesName = intent.getStringExtra("EXTRA_NAME")
@@ -297,6 +328,11 @@ class MoviesDetailActivity : AppCompatActivity(),OnClickListener {
                 startActivity(Intent.createChooser(shareIntent, getString(R.string.share_using)))
             }
         }
+    }
+
+    private fun setFavoriteStatus(state: Boolean) {
+        if (state) binding.fabFavorite.setImageResource(R.drawable.ic_favorite_full)
+        else binding.fabFavorite.setImageResource(R.drawable.ic_favorite_empty)
     }
 
 }

@@ -4,6 +4,13 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <permission
+        android:name="com.example.movieandroidapp.READ_DATABASE"
+        android:protectionLevel="normal" />
+    <permission
+        android:name="com.example.movieandroidapp.WRITE_DATABASE"
+        android:protectionLevel="normal" />
+
     <application
         android:name=".HiltApplication"
         android:allowBackup="true"
@@ -20,6 +27,15 @@
         <activity
             android:name=".MoviesDetailActivity"
             android:exported="false" />
+
+        <provider
+            android:name=".provider.MoviesFavoriteProvider"
+            android:authorities="com.example.movieandroidapp"
+            android:enabled="true"
+            android:exported="true"
+            android:readPermission="com.example.movieandroidapp.READ_DATABASE"
+            android:writePermission="com.example.movieandroidapp.WRITE_DATABASE" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">

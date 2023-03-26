@@ -1,6 +1,7 @@
 package com.example.movieandroidapp.db
 
 import android.database.Cursor
+import android.provider.BaseColumns._ID
 import com.example.movieandroidapp.entity.Movies
 
 object MappingHelper {
@@ -9,7 +10,7 @@ object MappingHelper {
         val movieList = ArrayList<Movies>()
         movieCursor?.apply {
             while (moveToNext()) {
-                val id = getInt(getColumnIndexOrThrow(DatabaseContract.MoviesFavoriteColumns._ID))
+                val id = getInt(getColumnIndexOrThrow(_ID))
                 val image = getString(getColumnIndexOrThrow(DatabaseContract.MoviesFavoriteColumns.COLUMN_IMAGE))
                 val name = getString(getColumnIndexOrThrow(DatabaseContract.MoviesFavoriteColumns.COLUMN_NAME))
                 val rating = getInt(getColumnIndexOrThrow(DatabaseContract.MoviesFavoriteColumns.COLUMN_RATING))
